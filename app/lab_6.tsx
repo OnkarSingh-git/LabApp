@@ -86,7 +86,10 @@ export default function Lab6Screen() {
       try {
         const result = await updateUser(editingId, { name, description });
         if (result.error) {
-          Alert.alert("Error", "Failed to update user: " + result.error.message);
+          Alert.alert(
+            "Error",
+            "Failed to update user: " + result.error.message
+          );
         } else {
           Alert.alert("Success", "User updated successfully!");
         }
