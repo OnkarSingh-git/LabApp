@@ -142,7 +142,7 @@ export default function Lab6Screen() {
       <View style={styles.form}>
         <TextInput
           style={styles.input}
-          placeholder="ID (number)"
+          placeholder="ID"
           value={id}
           onChangeText={setId}
           keyboardType="numeric"
