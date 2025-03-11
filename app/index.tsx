@@ -15,6 +15,7 @@ export default function Index() {
           <Button title="Lab 3" onPress={() => router.push('/lab_3')} />
           <Button title="Lab 4" onPress={() => router.push('/lab_4')} />
           <Button title="Lab 5" onPress={() => router.push('/lab_5')} />
+          <Button title="Lab 6" onPress={() => router.push('/lab_6')} />
         </View>
       </View>
     );
