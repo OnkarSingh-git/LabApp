@@ -1,4 +1,3 @@
-// app/lab_6.tsx
 import React, { useEffect, useState } from "react";
 import {
   View,
@@ -11,14 +10,9 @@ import {
   Button,
   Alert,
 } from "react-native";
-import {
-  getUser,
-  addUser,
-  updateUser,
-  deleteUser,
-} from "../lib/supabase_crud";
+import { getUser, addUser, updateUser, deleteUser } from "../lib/supabase_crud";
 
-// Define the structure of your user records.
+// Structure of your user records.
 interface User {
   id: number;
   name: string;
@@ -26,23 +20,25 @@ interface User {
 }
 
 export default function Lab6Screen() {
-  // State for storing users and UI status
+  // State for storing users and UI status.
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [refreshing, setRefreshing] = useState<boolean>(false);
-  
+
   // States for the form used in insert/update operations.
+  const [id, setId] = useState("");
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
+
   // When editing, store the record ID; if null, the form is in "insert" mode.
   const [editingId, setEditingId] = useState<number | null>(null);
 
-  // Function to fetch users from Supabase
+  // Fetch users from Supabase.
   const fetchData = async () => {
     try {
       setLoading(true);
       const data: User[] = await getUser();
-      console.log("Fetched data:", data); // Debug: check output in console
+      console.log("Fetched data:", data);
       setUsers(data);
     } catch (error) {
       console.error("Error fetching users:", error);
@@ -57,45 +53,61 @@ export default function Lab6Screen() {
     fetchData();
   }, []);
 
-  // Handle the "Add" or "Update" form submission
+  // Handle the "Add" or "Update" submission.
   const handleAddOrUpdate = async () => {
     if (!name) {
       Alert.alert("Validation Error", "Please provide a name.");
       return;
     }
 
-    try {
-      if (editingId === null) {
-        // Insert new record
-        const result = await addUser({ name, description });
+    if (editingId === null) {
+      if (!id) {
+        Alert.alert("Validation Error", "Please provide an ID.");
+        return;
+      }
+      const idNumber = parseInt(id, 10);
+      if (isNaN(idNumber)) {
+        Alert.alert("Validation Error", "ID must be a valid number.");
+        return;
+      }
+      try {
+        // Insert new record using the provided ID, name, and description.
+        const result = await addUser({ id: idNumber, name, description });
         if (result.error) {
           Alert.alert("Error", "Failed to add user: " + result.error.message);
         } else {
           Alert.alert("Success", "User added successfully!");
         }
-      } else {
-        // Update existing record
+      } catch (error) {
+        console.error("Error in add:", error);
+      }
+    } else {
+      // For updating existing record, typically we do not update the ID.
+      try {
         const result = await updateUser(editingId, { name, description });
         if (result.error) {
           Alert.alert("Error", "Failed to update user: " + result.error.message);
         } else {
           Alert.alert("Success", "User updated successfully!");
         }
-        // Reset editing state after update.
+        // Reset editing mode.
         setEditingId(null);
+      } catch (error) {
+        console.error("Error in update:", error);
       }
-      // Reset form fields
-      setName("");
-      setDescription("");
-      fetchData();
-    } catch (error) {
-      console.error("Error in add/update:", error);
     }
+    // Reset form fields.
+    setId("");
+    setName("");
+    setDescription("");
+    fetchData();
   };
 
-  // Pre-populate the form with the selected user’s data for editing.
+  // Pre-populate the form for editing.
   const handleEdit = (user: User) => {
     setEditingId(user.id);
+    // Set the ID field (as a string) so that it displays in the TextInput.
+    setId(user.id.toString());
     setName(user.name);
     setDescription(user.description || "");
   };
@@ -126,9 +138,15 @@ export default function Lab6Screen() {
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Users List</Text>
-
       {/* Form for inserting/updating user data */}
       <View style={styles.form}>
+        <TextInput
+          style={styles.input}
+          placeholder="ID (number)"
+          value={id}
+          onChangeText={setId}
+          keyboardType="numeric"
+        />
         <TextInput
           style={styles.input}
           placeholder="Name"
@@ -146,7 +164,6 @@ export default function Lab6Screen() {
           onPress={handleAddOrUpdate}
         />
       </View>
-
       {/* Display the list of users */}
       <FlatList
         data={users}

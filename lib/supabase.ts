@@ -1,10 +1,12 @@
-import { createClient } from '@supabase/supabase-js';
-import Constants from 'expo-constants';
+import { createClient } from "@supabase/supabase-js";
+import Constants from "expo-constants";
 
-const extra = Constants.expoConfig?.extra as { 
-  supabaseUrl: string; 
-  supabaseAnonKey: string; 
-} | undefined;
+const extra = Constants.expoConfig?.extra as
+  | {
+      supabaseUrl: string;
+      supabaseAnonKey: string;
+    }
+  | undefined;
 
 if (!extra || !extra.supabaseUrl || !extra.supabaseAnonKey) {
   throw new Error(

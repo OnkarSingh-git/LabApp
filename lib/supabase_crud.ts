@@ -10,14 +10,14 @@ export async function getUser() {
     return data;
 }
 
-export async function addUser(newUser: { name: string; description?: string }) {
+export async function addUser(newUser: { id: number; name: string; description?: string }) {
     const { data, error } = await supabase.from(TABLE_NAME).insert([newUser]);
     return { data, error };
   }
 
   export async function updateUser(
     id: number,
-    updatedData: { name?: string; description?: string }
+    updatedData: { id?: number; name?: string; description?: string }
   ) {
     const { data, error } = await supabase
       .from(TABLE_NAME)
